@@ -1,148 +1,97 @@
-<h1>ExpNo 6 : Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game</h1> 
+<h1>ExpNo 7 : Implement Alpha-beta pruning of Minimax Search Algorithm for a Simple TIC-TAC-TOE game</h1> 
 <h3>Name: GOWTHAM S    </h3>
-<h3>Register Number:  2305002008     </h3>
-<H3>Aim:</H3>
+<h3>Register Number: 2305002008         </h3>
+<H1>Aim:</H1>
 <p>
-    Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game
+Implement Alpha-beta pruning of Minimax Search Algorithm for a Simple TIC-TAC-TOE game
 </p>
+<h1>GOALS of Alpha-Beta Pruning in MiniMax Search Algorithm</h1>
 
-<H3>Theory and Procedure:</H3>
-To begin, let's start by defining what it means to play a perfect game of tic tac toe:
+<h3>Improve the decision-making efficiency of the computer player by reducing the number of evaluated nodes in the game tree.</h3>
+<h3>Tic-Tac-Toe game implementation incorporating the Alpha-Beta pruning and the Minimax algorithm with Python Code.</h3>
+<h1>IMPLEMENTATION</h1>
 
-If I play perfectly, every time I play I will either win the game, or I will draw the game. Furthermore if I play against another perfect player, I will always draw the game.
+The project involves developing a Tic-Tac-Toe game implementation incorporating the Alpha-Beta pruning with the Minimax algorithm. Using this algorithm, the computer player analyzes the game state, evaluates possible moves, and selects the optimal action based on the anticipated outcomes.
 
-How might we describe these situations quantitatively? Let's assign a score to the "end game conditions:"
+<h1>The Minimax algorithm</h1>
 
-I win, hurray! I get 10 points!
-I lose, shit. I lose 10 points (because the other player gets 10 points)
-I draw, whatever. I get zero points, nobody gets any points.
-So now we have a situation where we can determine a possible score for any game end state.
+recursively evaluates all possible moves and their potential outcomes, creating a game tree.
 
-Looking at a Brief Example
-To apply this, let's take an example from near the end of a game, where it is my turn. I am X. My goal here, obviously, is to maximize my end game score.
+<h1>Alpha-Beta pruning</h1>
 
-<img src="https://github.com/user-attachments/assets/ee02b31d-a9a6-4d13-ae7c-85d2d203116e" width="500" />
+Alpha–Beta (𝛼−𝛽) algorithm is actually an improved minimax using a heuristic. It stops evaluating a move when it makes sure that it’s worse than a previously examined move. Such moves need not to be evaluated further.
 
+When added to a simple minimax algorithm, it gives the same output but cuts off certain branches that can’t possibly affect the final decision — dramatically improving the performance
 
-
-If the top of this image represents the state of the game I see when it is my turn, then I have some choices to make, there are three places I can play, one of which clearly results in me wining and earning the 10 points. If I don't make that move, O could very easily win. And I don't want O to win, so my goal here, as the first player, should be to pick the maximum scoring move.
-
-But What About O?
-What do we know about O? Well we should assume that O is also playing to win this game, but relative to us, the first player, O wants obviously wants to chose the move that results in the worst score for us, it wants to pick a move that would minimize our ultimate score. Let's look at things from O's perspective, starting with the two other game states from above in which we don't immediately win:
-
-<img src="https://github.com/user-attachments/assets/ee02b31d-a9a6-4d13-ae7c-85d2d203116e" width="500" />
-
-
-The choice is clear, O would pick any of the moves that result in a score of -10.
-
-Describing Minimax
-The key to the Minimax algorithm is a back and forth between the two players, where the player whose "turn it is" desires to pick the move with the maximum score. In turn, the scores for each of the available moves are determined by the opposing player deciding which of its available moves has the minimum score. And the scores for the opposing players moves are again determined by the turn-taking player trying to maximize its score and so on all the way down the move tree to an end state.
-
-A description for the algorithm, assuming X is the "turn taking player," would look something like:
-
-If the game is over, return the score from X's perspective.
-Otherwise get a list of new game states for every possible move
-Create a scores list
-For each of these states add the minimax result of that state to the scores list
-If it's X's turn, return the maximum score from the scores list
-If it's O's turn, return the minimum score from the scores list
-You'll notice that this algorithm is recursive, it flips back and forth between the players until a final score is found.
-
-Let's walk through the algorithm's execution with the full move tree, and show why, algorithmically, the instant winning move will be picked:
-
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/d75b1253-e712-420e-9e40-1e303c4e41e7" />
-
-<ul>
-<li>It's X's turn in state 1. X generates the states 2, 3, and 4 and calls minimax on those states.</li>
-<li>State 2 pushes the score of +10 to state 1's score list, because the game is in an end state.</li>
-<li>State 3 and 4 are not in end states, so 3 generates states 5 and 6 and calls minimax on them, while state 4 generates states 7 and 8 and calls minimax on them.</li>
-<li>State 5 pushes a score of -10 onto state 3's score list, while the same happens for state 7 which pushes a score of -10 onto state 4's score list.</li>
-<li>State 6 and 8 generate the only available moves, which are end states, and so both of them add the score of +10 to the move lists of states 3 and 4.</li>
-<li>Because it is O's turn in both state 3 and 4, O will seek to find the minimum score, and given the choice between -10 and +10, both states 3 and 4 will yield -10.</li>
-<li>>Finally the score list for states 2, 3, and 4 are populated with +10, -10 and -10 respectively, and state 1 seeking to maximize the score will chose the winning move with score +10, state 2.</li
-</ul>
-##A Coded Version of Minimax Hopefully by now you have a rough sense of how th e minimax algorithm determines the best move to play. Let's examine my implementation of the algorithm to solidify the understanding:
-
-Here is the function for scoring the game:
-
-
-## Program
+## PROGRAM
 ```python
-import math,time
+import time
+b=[['.']*3 for _ in range(3)]
+turn='X'
 
-def win(b,p):
+def show():[print('|'.join(r))for r in b];print()
+def win():
     for i in range(3):
-        if all(b[i][j]==p for j in range(3)) or all(b[j][i]==p for j in range(3)): return True
-    return b[0][0]==b[1][1]==b[2][2]==p or b[0][2]==b[1][1]==b[2][0]==p
+        if b[i][0]==b[i][1]==b[i][2] != '.':return b[i][0]
+        if b[0][i]==b[1][i]==b[2][i] != '.':return b[0][i]
+    if b[0][0]==b[1][1]==b[2][2] != '.':return b[0][0]
+    if b[0][2]==b[1][1]==b[2][0] != '.':return b[0][2]
+    return '.' if all(b[i][j]!='.'for i in range(3)for j in range(3))else None
 
-def full(b): return all(c!="." for r in b for c in r)
-
-def show(b):
-    for r in b: print("|".join(r))
-    print()
-
-def minimax(b,maxi):
-    if win(b,"X"): return 1
-    if win(b,"O"): return -1
-    if full(b): return 0
-    if maxi:
-        best=-math.inf
-        for i in range(3):
-            for j in range(3):
-                if b[i][j]==".":
-                    b[i][j]="X"
-                    best=max(best,minimax(b,False))
-                    b[i][j]="."
-        return best
-    else:
-        best=math.inf
-        for i in range(3):
-            for j in range(3):
-                if b[i][j]==".":
-                    b[i][j]="O"
-                    best=min(best,minimax(b,True))
-                    b[i][j]="."
-        return best
-
-def best_move(b):
-    mv=(-1,-1); val=-math.inf
+def maxv(a,beta):
+    r=win()
+    if r=='X':return -1,0,0
+    if r=='O':return 1,0,0
+    if r=='.':return 0,0,0
+    v=-2;x=y=0
     for i in range(3):
         for j in range(3):
-            if b[i][j]==".":
-                b[i][j]="X"
-                v=minimax(b,False)
-                b[i][j]="."
-                if v>val: mv,val=(i,j),v
-    return mv
+            if b[i][j]=='.':
+                b[i][j]='O';m,_,_=minv(a,beta);b[i][j]='.'
+                if m>v:v,x,y=m,i,j
+                if v>=beta:return v,x,y
+                a=max(a,v)
+    return v,x,y
 
-b=[["."]*3 for _ in range(3)]
-while True:
-    show(b)
-    if win(b,"X"): print("X wins!"); break
-    if win(b,"O"): print("O wins!"); break
-    if full(b): print("It's a draw!"); break
+def minv(a,beta):
+    r=win()
+    if r=='X':return -1,0,0
+    if r=='O':return 1,0,0
+    if r=='.':return 0,0,0
+    v=2;x=y=0
+    for i in range(3):
+        for j in range(3):
+            if b[i][j]=='.':
+                b[i][j]='X';m,_,_=maxv(a,beta);b[i][j]='.'
+                if m<v:v,x,y=m,i,j
+                if v<=a:return v,x,y
+                beta=min(beta,v)
+    return v,x,y
 
-    t=time.time()
-    x,y=best_move(b)
-    print(f"Evaluation time: {round(time.time()-t,4)}s")
-    print(f"Recommended move: X = {x}, Y = {y}")
-    b[x][y]="X"
-    show(b)
-
-    if win(b,"X"): print("X wins!"); break
-    if full(b): print("It's a draw!"); break
-
-    x=int(input("Insert the X coordinate: "))
-    y=int(input("Insert the Y coordinate: "))
-    if b[x][y]==".": b[x][y]="O"
+while 1:
+    show();r=win()
+    if r:print('X wins!'if r=='X'else'O wins!'if r=='O'else'Tie!');break
+    if turn=='X':
+        t=time.time();_,x,y=minv(-2,2)
+        print(f"Eval:{round(time.time()-t,4)}s Move:X={x},Y={y}")
+        x,y=int(input("X:")),int(input("Y:"))
+        if 0<=x<3and 0<=y<3and b[x][y]=='.':b[x][y]='X';turn='O'
+        else:print("Invalid!")
+    else:_,x,y=maxv(-2,2);b[x][y]='O';turn='X'
 ```
-
 <hr>
-<h2>Input and Output</h2>
+<h2>Sample Input and Output:</h2>
 
-<img width="330" height="777" alt="image" src="https://github.com/user-attachments/assets/72e9f4b1-de6f-48d7-82c5-434e0cbf28cc" />
+<img width="403" height="318" alt="image" src="https://github.com/user-attachments/assets/40669698-a5f2-4e0b-9657-c52dbc8cf233" />
 
 
-<hr>
-<h2>Result:</h2>
-<p>Thus,Implementation of  Minimax Search Algorithm for a Simple TIC-TAC-TOE game wasa done successfully.</p>
+
+<img width="355" height="243" alt="image" src="https://github.com/user-attachments/assets/3db09a21-3698-4efa-96e1-c45bc0dd569d" />
+
+
+
+<img width="392" height="276" alt="image" src="https://github.com/user-attachments/assets/78ad8bb1-4f4f-4ba2-bbf7-edd74dc2fecd" />
+
+
+## RESULT
+Thus, we have successfully implemented Alpha–Beta Pruning of the Minimax Search Algorithm for a Simple TIC–TAC–TOE game.
